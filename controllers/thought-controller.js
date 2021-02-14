@@ -13,7 +13,7 @@ const thoughtController = {
   },
 
   // get one Thought by id
-  getThoughtById({ params }, res) {
+  getThoughtById({ params }, res, req) {
     Thought.findOne({
       _id: req.params.id,
     })
@@ -52,11 +52,10 @@ const thoughtController = {
       })
       .then((user) => {
         if (!user) {
-          res
-            .status(404)
-            .json({
-              message: `no user found with the id of ${req.body.userId}`,
-            });
+          res.status(404).json({
+            message: `no user found with the id of ${req.body.userId}`,
+          });
+          return;
         }
         res.status(200).json(user);
       })
@@ -86,11 +85,7 @@ const thoughtController = {
   // update thought
 
   updateThought(req, res) {
-    Thought.findOneAndUpdate(
-        { _id: req.params.id },
-        req.body,
-        { new: true }
-    )
+    Thought.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
           res.status(404).json({ message: "No Thought found with this id!" });
@@ -102,26 +97,44 @@ const thoughtController = {
   },
 
   // remove Thought
-  removeThought({ params }, res) {
-    Thought.findOneAndDelete({ _id: params.ThoughtId })
-      .then((deletedThought) => {
-        if (!deletedThought) {
-          return res.status(404).json({ message: "No Thought with this id!" });
+  removeThought(req, res) {
+    Thought.findOneAndDelete({
+      _id: req.params.id,
+    })
+      .then((thought) => {
+        console.log(thought);
+        if (!thought) {
+          return res
+            .status(404)
+            .json({
+              message: `no thought found with the id of ${req.params.id}`,
+            });
         }
+        //then delete the thought from the user collection
         return User.findOneAndUpdate(
-          { _id: params.UserId },
-          { $pull: { Thoughts: params.ThoughtId } },
+          { _id: req.params.userId },
+          { $pull: { thoughts: req.params.id } },
           { new: true }
         );
       })
-      .then((dbThoughtData) => {
-        if (!dbThoughtData) {
-          res.status(404).json({ message: "No User found with this id!" });
-          return;
+      .then((userInfo) => {
+        if (!userInfo) {
+          res
+            .status(404)
+            .json({
+              message: `no user found with the id of ${req.params.userId}`,
+            });
         }
-        res.json(dbThoughtData);
+        res
+          .status(200)
+          .json({
+            message: `thought id of ${req.params.id} has been deleted from the user with the id of ${req.params.userId}`,
+          });
       })
-      .catch((err) => res.json(err));
+      .catch((e) => {
+        console.log(e);
+        res.status(500).json(e);
+      });
   },
   // remove reaction
   removeReaction({ params }, res) {
