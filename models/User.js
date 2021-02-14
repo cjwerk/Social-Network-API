@@ -1,6 +1,6 @@
 const { Schema, model, Types } = require('mongoose');
 const Thought = require('./Thought.js');
-const moment = require('moment');
+// const moment = require('moment');
 
 
 const UserSchema = new Schema(
@@ -8,13 +8,13 @@ const UserSchema = new Schema(
         username: {
             type: String,
             unique: true,
-            require: true,
+            required: true,
             trim: true
         },
         email: {
             type: String,
             unique: true,
-            require: true,
+            required: true,
             match: [/.+@.+\..+/]
         },
         thoughts: [
