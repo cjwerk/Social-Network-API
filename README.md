@@ -5,7 +5,7 @@
 
   ## Description 
 
-  Creating a back-end solution for a social-networking site using MongoDB, and Express.js. REST API routes tested with Insomnia Core. Github repo https://github.com/cjwerk/Social-Network-API and walkthrough video 
+  Creating a back-end solution for a social-networking site using MongoDB, and Express.js. REST API routes tested with Insomnia Core. Github repo https://github.com/cjwerk/Social-Network-API and walkthrough video https://drive.google.com/file/d/1lIeVkwy7FauqYj00q7JlraC8LSlO2ueJ/view
 
 
   ## Installation

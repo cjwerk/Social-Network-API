@@ -12,16 +12,22 @@ const thoughtController = {
       });
   },
 
-  // get one Thought by id
-  getThoughtById({ params }, res, req) {
+  getThoughtById(req, res) {
     Thought.findOne({
       _id: req.params.id,
     })
       .select("-__v")
-      .then((dbThoughtData) => res.json(dbThoughtData))
-      .catch((err) => {
-        console.log(err);
-        res.sendStatus(400);
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
+          return res.status(404).json({
+            message: `no thought found with the id of ${req.params.id}`,
+          });
+        }
+        res.status(200).json(dbThoughtData);
+      })
+      .catch((e) => {
+        console.log(e);
+        res.status(500).json(e);
       });
   },
 
@@ -87,9 +93,11 @@ const thoughtController = {
       .then((thought) => {
         console.log(thought);
         if (!thought) {
-          return res.status(404).json({
-            message: `no thought found with the id of ${req.params.id}`,
-          });
+          return res
+            .status(404)
+            .json({
+              message: `no thought found with the id of ${req.params.id}`,
+            });
         }
         //then delete the thought from the user collection
         return User.findOneAndUpdate(
@@ -100,13 +108,17 @@ const thoughtController = {
       })
       .then((userInfo) => {
         if (!userInfo) {
-          res.status(404).json({
-            message: `no user found with the id of ${req.params.userId}`,
-          });
+          res
+            .status(404)
+            .json({
+              message: `no user found with the id of ${req.params.userId}`,
+            });
         }
-        res.status(200).json({
-          message: `thought id of ${req.params.id} has been deleted from the user with the id of ${req.params.userId}`,
-        });
+        res
+          .status(200)
+          .json({
+            message: `thought id of ${req.params.id} has been deleted from the user with the id of ${req.params.userId}`,
+          });
       })
       .catch((e) => {
         console.log(e);
@@ -123,11 +135,9 @@ const thoughtController = {
       .then((dbThoughtData) => {
         console.log(dbThoughtData);
         if (!dbThoughtData) {
-          return res
-            .status(404)
-            .json({
-              message: `no thought found with the id of ${req.params.thoughtId}`,
-            });
+          return res.status(404).json({
+            message: `no thought found with the id of ${req.params.thoughtId}`,
+          });
         }
         res.status(200).json(dbThoughtData);
       })
@@ -148,11 +158,9 @@ const thoughtController = {
       .then((dbThoughtData) => {
         console.log(dbThoughtData);
         if (!dbThoughtData) {
-          return res
-            .status(404)
-            .json({
-              message: `no thought found with the id of ${req.params.thoughtId} or reaction id of ${req.params.reactionId} `,
-            });
+          return res.status(404).json({
+            message: `no thought found with the id of ${req.params.thoughtId} or reaction id of ${req.params.reactionId} `,
+          });
         }
         res.status(200).json(dbThoughtData);
       })
